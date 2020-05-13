@@ -54,8 +54,9 @@ reg = linear_model.LinearRegression()
 # reg.fit(np.array([P]).T, np.array([re_dP]).T)
 
 ax = [
-  plt.subplot2grid((1, 2), (0, 0)),
-  plt.subplot2grid((1, 2), (0, 1))
+  plt.subplot2grid((2, 2), (0, 0), colspan = 2),
+  plt.subplot2grid((2, 2), (1, 0)),
+  plt.subplot2grid((2, 2), (1, 1)),
 ]
 
 start = 0
@@ -84,10 +85,10 @@ while start < len(P) - 2:
     dX = np.linspace(0, P[-1], len(P) * 10)
     dY = a * np.sqrt(dX) + b
     # dY = a * dX + b
-    ax[0].plot(P, re_dP, 'bo')
-    ax[0].plot(P[start:], re_dP[start:], "ro")
-    ax[0].plot(dX, dY, 'r-')
-    ax[0].grid(axis='both', color='0.95')
+    ax[1].plot(P, re_dP, 'bo')
+    ax[1].plot(P[start:], re_dP[start:], "ro")
+    ax[1].plot(dX, dY, 'r-')
+    ax[1].grid(axis='both', color='0.95')
     break
   start += 1
 
@@ -109,7 +110,7 @@ def calculate_C(t, P):
   return 2 * np.log(b/np.sqrt(P) + a) + b * t
 
 def calculate_dP(t, C):
-  return (b**2 * C * np.exp(t * b)) / (C - a * np.exp(t * b)) ** 2
+  return ((b ** 3) * np.exp((-b * t + C) / 2)) / ((np.exp((-b * t + C) / 2) - a) ** 3)
 
 def calculate_P(t, C):
   return (b / (np.exp((-b * t + C) / 2) - a)) ** 2
@@ -135,10 +136,14 @@ C, _ = find_best_C()
 print(C, _)
 
 X = np.linspace(0, n * 2, n * 100)
-Y = calculate_P(X, C)
-ax[1].plot(X, Y, "b-", label="P", markerSize=1)
 xP = np.linspace(0, n - 1, n)
-ax[1].plot(xP, P, "bo", label="scatter P")
 
-ax[1].grid(axis='both', color='0.95')
+ax[2].plot(X, calculate_dP(X, C), 'r-', label="dP")
+ax[2].plot(xP, dP, 'ro', label="scatter dP")
+ax[2].grid(axis='both', color='0.95')
+
+ax[0].plot(X, calculate_P(X, C), "b-", label="P", markerSize=1)
+ax[0].plot(xP, P, "bo", label="scatter P")
+ax[0].grid(axis='both', color='0.95')
+
 plt.show()
