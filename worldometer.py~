@@ -1,5 +1,4 @@
 from pyquery import PyQuery as pq
-import requests
 import json
 from matplotlib import pyplot as plt
 import math
@@ -17,7 +16,7 @@ args = parser.parse_args()
 base = "https://www.worldometers.info/coronavirus/country/"
 country = args.country
 
-d = pq(requests.get(url=base + country, proxies={'http':'50.207.31.221:80'}).text)
+d = pq(url=base + country)
 data = d(".col-md-8").eq(2).find("script").eq(0).__str__()
 start = data.index("data") + 6
 end = data.index("]", start) + 1
